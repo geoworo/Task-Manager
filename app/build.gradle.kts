@@ -32,3 +32,9 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required.set(true)
+	}
+}
