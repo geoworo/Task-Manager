@@ -1,4 +1,4 @@
-package hexlet.code.app.dto;
+package hexlet.code.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

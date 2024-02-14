@@ -1,10 +1,10 @@
-package hexlet.code.app;
+package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.app.dto.UserUpdateDTO;
-import hexlet.code.app.mapper.UserMapper;
-import hexlet.code.app.model.User;
-import hexlet.code.app.repository.UserRepository;
+import hexlet.code.dto.UserUpdateDTO;
+import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.User;
+import hexlet.code.repository.UserRepository;
 import net.datafaker.Faker;
 import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;

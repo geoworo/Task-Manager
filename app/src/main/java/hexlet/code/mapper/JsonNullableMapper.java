@@ -1,6 +1,5 @@
-package hexlet.code.app.mapper;
+package hexlet.code.mapper;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
