@@ -9,6 +9,7 @@ import net.datafaker.Faker;
 import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,8 +42,7 @@ public class UserControllerTests {
     @Autowired
     private UserRepository ur;
 
-    @Autowired
-    private Faker faker;
+    private Faker faker = new Faker();
 
     private User user;
 
@@ -57,6 +57,11 @@ public class UserControllerTests {
                 .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
                 .supply(Select.field(User::getLastName), () -> faker.name().lastName())
                 .create();
+    }
+
+    @AfterEach
+    public void clean() {
+        ur.deleteAll();
     }
 
     @Test
