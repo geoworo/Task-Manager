@@ -15,19 +15,13 @@ import lombok.AllArgsConstructor;
 public class DataInitializer implements ApplicationRunner {
 
     @Autowired
-    private final UserRepository userRepository;
-
-    @Autowired
     private final CustomUserDetailsService userService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        var email = "hexlet@example.com";
         var userData = new User();
-        userData.setEmail(email);
+        userData.setEmail("hexlet@example.com");
         userData.setPasswordDigest("qwerty");
         userService.createUser(userData);
-
-        var user = userRepository.findByEmail(email).get();
     }
 }
