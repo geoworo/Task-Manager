@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
@@ -15,12 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.instancio.Instancio;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,8 +49,11 @@ public class UserControllerTests {
 
     private User user;
 
+    private JwtRequestPostProcessor token;
+
     @BeforeEach
     public void setUp() {
+        token = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
         user = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
                 .ignore(Select.field(User::getCreatedAt))
@@ -67,7 +73,7 @@ public class UserControllerTests {
     @Test
     public void testShow() throws Exception {
         ur.save(user);
-        var request = get("/api/users/" + user.getId());
+        var request = get("/api/users/" + user.getId()).with(token);
         var result = mm.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).and(
@@ -79,19 +85,24 @@ public class UserControllerTests {
     @Test
     public void testIndex() throws Exception {
         ur.save(user);
-        var result = mm.perform(get("/api/users")).andExpect(status().isOk()).andReturn();
+        var result = mm.perform(get("/api/users").with(jwt())).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
     }
 
     @Test
     public void testCreate() throws Exception {
-        var dto = um.map(user);
+        var dto = new UserCreateDTO();
+        dto.setEmail(user.getEmail());
+        dto.setPassword(user.getPassword());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
         var request = post("/api/users")
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto));
         mm.perform(request).andExpect(status().isCreated());
-        var userRes = ur.findById(user.getId()).get();
+        var userRes = ur.findByEmail(user.getEmail()).get();
         assertThat(userRes.getFirstName()).isEqualTo(dto.getFirstName());
     }
 
@@ -102,17 +113,18 @@ public class UserControllerTests {
         String email = faker.internet().emailAddress();
         dto.setEmail(JsonNullable.of(email));
         var request = put("/api/users/" + user.getId())
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto));
         mm.perform(request).andExpect(status().isOk());
         var userRes = ur.findById(user.getId()).get();
-        assertThat(user.getEmail()).isEqualTo(email);
+        assertThat(userRes.getEmail()).isEqualTo(email);
     }
 
     @Test
     public void testDelete() throws Exception {
         ur.save(user);
-        var request = delete("/api/users/" + user.getId());
+        var request = delete("/api/users/" + user.getId()).with(token);
         mm.perform(request).andExpect(status().isNoContent());
         assertThat(ur.existsById(user.getId())).isEqualTo(false);
     }

@@ -1,7 +1,6 @@
 package hexlet.code.component;
 
 import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
