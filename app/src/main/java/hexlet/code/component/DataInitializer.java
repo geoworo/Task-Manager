@@ -17,7 +17,7 @@ public class DataInitializer implements ApplicationRunner {
     private final CustomUserDetailsService userService;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         var userData = new User();
         userData.setEmail("hexlet@example.com");
         userData.setPasswordDigest("qwerty");
