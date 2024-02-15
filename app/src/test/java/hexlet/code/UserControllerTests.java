@@ -53,7 +53,6 @@ public class UserControllerTests {
 
     @BeforeEach
     public void setUp() {
-        token = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
         user = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
                 .ignore(Select.field(User::getCreatedAt))
@@ -63,6 +62,7 @@ public class UserControllerTests {
                 .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
                 .supply(Select.field(User::getLastName), () -> faker.name().lastName())
                 .create();
+        token = jwt().jwt(builder -> builder.subject(user.getEmail()));
     }
 
     @AfterEach
