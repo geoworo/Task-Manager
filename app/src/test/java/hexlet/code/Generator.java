@@ -1,0 +1,32 @@
+package hexlet.code;
+
+import hexlet.code.model.TaskStatus;
+import hexlet.code.model.User;
+import net.datafaker.Faker;
+import org.instancio.Instancio;
+import org.instancio.Select;
+
+public class Generator {
+    private static Faker faker = new Faker();
+
+    public static User generateUser() {
+        return Instancio.of(User.class)
+                .ignore(Select.field(User::getId))
+                .ignore(Select.field(User::getCreatedAt))
+                .ignore(Select.field(User::getUpdatedAt))
+                .supply(Select.field(User::getPasswordDigest), () -> faker.internet().password(3, 10))
+                .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
+                .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
+                .supply(Select.field(User::getLastName), () -> faker.name().lastName())
+                .create();
+    }
+
+    public static TaskStatus generateStatus() {
+        return Instancio.of(TaskStatus.class)
+                .ignore(Select.field(TaskStatus::getId))
+                .ignore(Select.field(TaskStatus::getCreatedAt))
+                .supply(Select.field(TaskStatus::getName), () -> faker.lorem().word())
+                .supply(Select.field(TaskStatus::getSlug), () -> faker.lorem().word())
+                .create();
+    }
+}
