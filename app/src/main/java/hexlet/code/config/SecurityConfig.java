@@ -38,8 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/pages").permitAll()
-                        .requestMatchers("/api/pages/*").permitAll()
+                        .requestMatchers("/api/task_statuses").permitAll()g
                         .requestMatchers("/index.html").permitAll()
                         .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
