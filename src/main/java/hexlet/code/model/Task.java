@@ -49,6 +49,10 @@ public class Task {
     @ManyToOne
     private TaskStatus taskStatus;
 
+    @ToString.Include
+    @ManyToOne
+    private User assignee;
+
     @CreatedDate
     private LocalDate createdAt;
 }
