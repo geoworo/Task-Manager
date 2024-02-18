@@ -37,9 +37,7 @@ public class DataInitializer implements ApplicationRunner {
             userService.createUser(admin);
         }
         for (var status: statuses) {
-            if (tsr.findBySlug(status.getSlug()).isEmpty()) {
-                tsr.save(status);
-            }
+            tsr.save(status);
         }
     }
 
