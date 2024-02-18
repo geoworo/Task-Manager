@@ -29,22 +29,18 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        User admin = new User();
+        admin.setEmail("hexlet@example.com");
+        admin.setPasswordDigest("qwerty");
         var statuses = createTaskStatuses();
         if (ur.findByEmail("hexlet@example.com").isEmpty()) {
-            userService.createUser(createAdmin());
+            userService.createUser(admin);
         }
         for (var status: statuses) {
             if (tsr.findBySlug(status.getSlug()).isEmpty()) {
                 tsr.save(status);
             }
         }
-    }
-
-    private static User createAdmin() {
-        User admin = new User();
-        admin.setEmail("hexlet@example.com");
-        admin.setPasswordDigest("qwerty");
-        return admin;
     }
 
     private static List<TaskStatus> createTaskStatuses() {
