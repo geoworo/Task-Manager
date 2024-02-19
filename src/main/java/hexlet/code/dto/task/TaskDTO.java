@@ -13,7 +13,7 @@ public class TaskDTO {
     private String title;
     private Integer index;
     private String content;
-    private String taskStatus;
+    private String status;
 
     @JsonProperty("assignee_id")
     private Integer assigneeId;

@@ -1,5 +1,6 @@
 package hexlet.code.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,12 +10,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
 
 import java.time.LocalDate;
 
@@ -46,11 +41,11 @@ public class Task {
     private String description;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private TaskStatus taskStatus;
 
     @ToString.Include
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User assignee;
 
     @CreatedDate

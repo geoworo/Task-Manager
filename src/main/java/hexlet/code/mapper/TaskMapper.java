@@ -42,7 +42,7 @@ public abstract class TaskMapper {
 
     @Mapping(source = "title", target = "name")
     @Mapping(source = "content", target = "description")
-    @Mapping(source = "assignee", target = "assigneeId")
+    @Mapping(source = "assigneeId", target = "assignee")
     @Mapping(source = "status", target = "taskStatus", qualifiedByName = "statusToTaskStatus")
     public abstract void update(TaskUpdateDTO dto, @MappingTarget Task task);
     public abstract List<TaskDTO> map(List<Task> tasks);

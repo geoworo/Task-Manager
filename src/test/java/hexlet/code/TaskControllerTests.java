@@ -66,6 +66,7 @@ public class TaskControllerTests {
         token = jwt().jwt(builder -> builder.subject(user.getEmail()));
 
         tstatus = generateStatus();
+        tsr.save(tstatus);
         task = generateTask();
 
         task.setAssignee(user);

@@ -20,5 +20,5 @@ public class TaskCreateDTO {
     private String status;
 
     @JsonProperty("assignee_id")
-    private Long asigneeId;
+    private Long assigneeId;
 }
