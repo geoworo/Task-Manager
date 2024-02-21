@@ -2,7 +2,6 @@ package hexlet.code.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,9 +20,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
-@Table(name = "tasks")
+@Table(name = "labels")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Task {
+public class Label {
     @Id
     @EqualsAndHashCode.Include
     @ToString.Include
@@ -32,28 +31,13 @@ public class Task {
 
     @ToString.Include
     @NotBlank
-    @Size(min = 1)
+    @Column(unique = true)
+    @Size(min = 3, max = 1000)
     private String name;
-
-    @ToString.Include
-    private Integer index;
-
-    @ToString.Include
-    private String description;
-
-    @NotNull
-    @ToString.Include
-    @ManyToOne(fetch = FetchType.EAGER)
-    private TaskStatus taskStatus;
-
-    @ToString.Include
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User assignee;
 
     @CreatedDate
     private LocalDate createdAt;
 
-    @ManyToMany
-    @ToString.Include
-    private Set<Label> labels;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "labels", cascade = CascadeType.MERGE)
+    private Set<Task> tasks;
 }

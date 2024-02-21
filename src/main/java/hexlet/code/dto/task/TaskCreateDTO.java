@@ -12,7 +12,7 @@ public class TaskCreateDTO {
     private Integer index;
 
     @NotBlank
-    private Integer title;
+    private String title;
 
     private String content;
 

@@ -16,7 +16,7 @@ public class TaskDTO {
     private String status;
 
     @JsonProperty("assignee_id")
-    private Integer assigneeId;
+    private Long assigneeId;
 
     private LocalDate createdAt;
 }

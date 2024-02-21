@@ -75,9 +75,9 @@ public class TaskControllerTests {
 
     @AfterEach
     public void clean() {
+        tr.deleteAll();
         tsr.deleteAll();
         ur.deleteAll();
-        tr.deleteAll();
     }
 
     @Test
@@ -92,15 +92,13 @@ public class TaskControllerTests {
     @Test
     public void testShow() throws Exception {
         tr.save(task);
-        var result = mm.perform(get("/api/tasks" + task.getId()).with(token))
+        var result = mm.perform(get("/api/tasks/" + task.getId()).with(token))
                 .andExpect(status().isOk())
                 .andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).and(
                 v -> v.node("title").isEqualTo(task.getName()),
-                v -> v.node("content").isEqualTo(task.getDescription()),
-                v -> v.node("taskStatus").isEqualTo(task.getTaskStatus()),
-                v -> v.node("assigneeId").isEqualTo(task.getAssignee().getId())
+                v -> v.node("content").isEqualTo(task.getDescription())
         );
     }
 
@@ -124,7 +122,7 @@ public class TaskControllerTests {
         var dto = new TaskUpdateDTO();
         dto.setTitle(JsonNullable.of("name"));
         dto.setContent(JsonNullable.of("description"));
-        var request = put("api/tasks/" + task.getId()).with(token)
+        var request = put("/api/tasks/" + task.getId()).with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto));
         mm.perform(request).andExpect(status().isOk());

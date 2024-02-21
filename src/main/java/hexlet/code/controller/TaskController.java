@@ -4,6 +4,7 @@ import hexlet.code.dto.task.TaskCreateDTO;
 import hexlet.code.dto.task.TaskDTO;
 import hexlet.code.dto.task.TaskUpdateDTO;
 import hexlet.code.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +43,13 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskDTO create(@RequestBody TaskCreateDTO dto) {
+    public TaskDTO create(@Valid @RequestBody TaskCreateDTO dto) {
         return ts.create(dto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskDTO update(@RequestBody TaskUpdateDTO data, @PathVariable Long id) {
+    public TaskDTO update(@Valid @RequestBody TaskUpdateDTO data, @PathVariable Long id) {
         return ts.update(data, id);
     }
 
