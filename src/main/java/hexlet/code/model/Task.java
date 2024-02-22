@@ -60,7 +60,7 @@ public class Task {
     @CreatedDate
     private LocalDate createdAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @ToString.Include
     private Set<Label> labels;
 }
