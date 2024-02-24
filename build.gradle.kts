@@ -72,7 +72,7 @@ tasks.sentryBundleSourcesJava {
 }
 
 sentry {
-	includeSourceContext = true
-	org = "georgev"
-	projectName = "java-spring-boot"
+	includeSourceContext.set(true)
+	org.set("georgev")
+	projectName.set("java-spring-boot")
 }
