@@ -67,9 +67,12 @@ tasks.jacocoTestReport {
 	}
 }
 
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
+}
+
 sentry {
 	includeSourceContext = true
 	org = "georgev"
 	projectName = "java-spring-boot"
-	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }

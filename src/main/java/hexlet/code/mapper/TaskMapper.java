@@ -65,14 +65,14 @@ public abstract class TaskMapper {
 
     @Named("labelsToIds")
     public Set<Long> labelsToIds(Set<Label> labels) {
-        return labels.isEmpty() ? new HashSet<>() : labels.stream()
+        return labels == null ? new HashSet<>() : labels.stream()
                 .map(Label::getId)
                 .collect(Collectors.toSet());
     }
 
     @Named("idsToLabels")
     public Set<Label> idsToLabels(Set<Long> ids) {
-        return ids.isEmpty() ? new HashSet<>() : ids.stream()
+        return ids == null ? new HashSet<>() : ids.stream()
                 .map(id -> lr.findById(id).orElseThrow())
                 .collect(Collectors.toSet());
     }
