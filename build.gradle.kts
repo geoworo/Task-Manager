@@ -44,7 +44,7 @@ dependencies {
 	implementation("org.instancio:instancio-junit:3.3.0")
 	implementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
 	implementation("net.datafaker:datafaker:2.0.2")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	runtimeOnly("com.h2database:h2:2.2.224")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -75,4 +75,12 @@ sentry {
 	includeSourceContext.set(true)
 	org.set("georgev")
 	projectName.set("java-spring-boot")
+}
+
+tasks.withType<JavaCompile> {
+	options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+	systemProperty("file.encoding", "UTF-8")
 }
