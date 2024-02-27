@@ -22,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 )
 public abstract class UserMapper {
     @Autowired
-    private PasswordEncoder pe;
+    private PasswordEncoder passwordEncoder;
 
     @Mapping(target = "passwordDigest", ignore = true)
     public abstract void update(UserUpdateDTO dto, @MappingTarget User user);
@@ -34,13 +34,13 @@ public abstract class UserMapper {
     public void encryptPasswordUpdate(UserUpdateDTO dto, @MappingTarget User user) {
         var password = dto.getPassword();
         if (password != null && password.isPresent()) {
-            user.setPasswordDigest(pe.encode(password.get()));
+            user.setPasswordDigest(passwordEncoder.encode(password.get()));
         }
     }
 
     @BeforeMapping
     public void encryptPasswordCreate(UserCreateDTO dto) {
         var password = dto.getPassword();
-        dto.setPassword(pe.encode(password));
+        dto.setPassword(passwordEncoder.encode(password));
     }
 }

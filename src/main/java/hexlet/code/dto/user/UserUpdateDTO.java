@@ -1,6 +1,5 @@
 package hexlet.code.dto.user;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,7 +11,6 @@ import org.openapitools.jackson.nullable.JsonNullable;
 @Setter
 public class UserUpdateDTO {
     @Email
-    @Column(unique = true)
     private JsonNullable<String> email;
 
     @NotBlank

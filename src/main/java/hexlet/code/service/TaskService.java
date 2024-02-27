@@ -7,46 +7,42 @@ import hexlet.code.dto.task.TaskUpdateDTO;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.specification.TaskSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TaskService {
-    @Autowired
-    private TaskRepository tr;
-
-    @Autowired
-    private TaskMapper tm;
-
-    @Autowired
-    private TaskSpecification ts;
+    private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    private final TaskSpecification taskSpecification;
 
     public List<TaskDTO> getAll(TaskParamsDTO params) {
-        var spec = ts.build(params);
-        return tr.findAll(spec).stream().map(tm::map).toList();
+        var spec = taskSpecification.build(params);
+        return taskRepository.findAll(spec).stream().map(taskMapper::map).toList();
     }
 
     public TaskDTO findById(Long id) {
-        var task = tr.findById(id).orElseThrow();
-        return tm.map(task);
+        var task = taskRepository.findById(id).orElseThrow();
+        return taskMapper.map(task);
     }
 
     public TaskDTO create(TaskCreateDTO data) {
-        var task = tm.map(data);
-        tr.save(task);
-        return tm.map(task);
+        var task = taskMapper.map(data);
+        taskRepository.save(task);
+        return taskMapper.map(task);
     }
 
     public TaskDTO update(TaskUpdateDTO data, Long id) {
-        var task = tr.findById(id).orElseThrow();
-        tm.update(data, task);
-        tr.save(task);
-        return tm.map(task);
+        var task = taskRepository.findById(id).orElseThrow();
+        taskMapper.update(data, task);
+        taskRepository.save(task);
+        return taskMapper.map(task);
     }
 
     public void delete(Long id) {
-        tr.deleteById(id);
+        taskRepository.deleteById(id);
     }
 }

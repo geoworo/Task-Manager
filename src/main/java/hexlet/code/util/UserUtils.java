@@ -3,7 +3,6 @@ package hexlet.code.util;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class UserUtils {
-    @Autowired
-    private UserRepository ur;
+    private final UserRepository userRepository;
 
     @Bean
     public User getCurrentUser() {
@@ -20,6 +18,11 @@ public class UserUtils {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        return ur.findByEmail(authentication.getName()).get();
+        return userRepository.findByEmail(authentication.getName()).get();
+    }
+
+    public boolean isSameUser(Long id) {
+        var currentUser = getCurrentUser();
+        return currentUser.getId() == id;
     }
 }

@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 )
 public abstract class TaskMapper {
     @Autowired
-    TaskStatusRepository tsr;
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    LabelRepository lr;
+    private LabelRepository labelRepository;
 
     @Mapping(source = "title", target = "name")
     @Mapping(source = "content", target = "description")
@@ -60,7 +60,7 @@ public abstract class TaskMapper {
 
     @Named("statusToTaskStatus")
     public TaskStatus statusToTaskStatus(String status) {
-        return tsr.findBySlug(status).orElseThrow();
+        return taskStatusRepository.findBySlug(status).orElseThrow();
     }
 
     @Named("labelsToIds")
@@ -72,8 +72,6 @@ public abstract class TaskMapper {
 
     @Named("idsToLabels")
     public Set<Label> idsToLabels(Set<Long> ids) {
-        return ids == null ? new HashSet<>() : ids.stream()
-                .map(id -> lr.findById(id).orElseThrow())
-                .collect(Collectors.toSet());
+        return ids == null ? new HashSet<>() : labelRepository.findByIdIn(ids);
     }
 }

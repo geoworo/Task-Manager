@@ -7,7 +7,6 @@ import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -19,18 +18,10 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
-
-    @Autowired
     private final CustomUserDetailsService userService;
-
-    @Autowired
-    private final TaskStatusRepository tsr;
-
-    @Autowired
-    private final UserRepository ur;
-
-    @Autowired
-    private final LabelRepository lr;
+    private final TaskStatusRepository taskStatusRepository;
+    private final UserRepository userRepository;
+    private final LabelRepository labelRepository;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -38,18 +29,18 @@ public class DataInitializer implements ApplicationRunner {
         admin.setEmail("hexlet@example.com");
         admin.setPasswordDigest("qwerty");
         var statuses = createTaskStatuses();
-        if (ur.findByEmail("hexlet@example.com").isEmpty()) {
+        if (userRepository.findByEmail("hexlet@example.com").isEmpty()) {
             userService.createUser(admin);
         }
         for (var status: statuses) {
-            tsr.save(status);
+            taskStatusRepository.save(status);
         }
         var label1 = new Label();
         label1.setName("bug");
-        lr.save(label1);
+        labelRepository.save(label1);
         var label2 = new Label();
         label2.setName("feature");
-        lr.save(label2);
+        labelRepository.save(label2);
     }
 
     private static List<TaskStatus> createTaskStatuses() {
