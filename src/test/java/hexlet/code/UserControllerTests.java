@@ -3,7 +3,6 @@ package hexlet.code;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.user.UserCreateDTO;
 import hexlet.code.dto.user.UserUpdateDTO;
-import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import net.datafaker.Faker;
@@ -31,16 +30,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class UserControllerTests {
     @Autowired
-    private MockMvc mm;
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private UserMapper um;
-
-    @Autowired
-    private UserRepository ur;
+    private UserRepository userRepository;
 
     private Faker faker = new Faker();
 
@@ -56,14 +52,14 @@ public class UserControllerTests {
 
     @AfterEach
     public void clean() {
-        ur.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     public void testShow() throws Exception {
-        ur.save(user);
+        userRepository.save(user);
         var request = get("/api/users/" + user.getId()).with(token);
-        var result = mm.perform(request).andExpect(status().isOk()).andReturn();
+        var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).and(
                 r -> r.node("firstName").isEqualTo(user.getFirstName()),
@@ -73,8 +69,8 @@ public class UserControllerTests {
 
     @Test
     public void testIndex() throws Exception {
-        ur.save(user);
-        var result = mm.perform(get("/api/users").with(jwt())).andExpect(status().isOk()).andReturn();
+        userRepository.save(user);
+        var result = mockMvc.perform(get("/api/users").with(jwt())).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
     }
@@ -89,32 +85,32 @@ public class UserControllerTests {
         var request = post("/api/users")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request).andExpect(status().isCreated());
-        var userRes = ur.findByEmail(user.getEmail()).get();
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request).andExpect(status().isCreated());
+        var userRes = userRepository.findByEmail(user.getEmail()).orElseThrow();
         assertThat(userRes.getFirstName()).isEqualTo(dto.getFirstName());
     }
 
     @Test
     public void testUpdate() throws Exception {
-        ur.save(user);
+        userRepository.save(user);
         var dto = new UserUpdateDTO();
         String email = faker.internet().emailAddress();
         dto.setEmail(JsonNullable.of(email));
         var request = put("/api/users/" + user.getId())
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request).andExpect(status().isOk());
-        var userRes = ur.findById(user.getId()).get();
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request).andExpect(status().isOk());
+        var userRes = userRepository.findById(user.getId()).orElseThrow();
         assertThat(userRes.getEmail()).isEqualTo(email);
     }
 
     @Test
     public void testDelete() throws Exception {
-        ur.save(user);
+        userRepository.save(user);
         var request = delete("/api/users/" + user.getId()).with(token);
-        mm.perform(request).andExpect(status().isNoContent());
-        assertThat(ur.existsById(user.getId())).isEqualTo(false);
+        mockMvc.perform(request).andExpect(status().isNoContent());
+        assertThat(userRepository.existsById(user.getId())).isEqualTo(false);
     }
 }

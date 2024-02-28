@@ -18,7 +18,7 @@ public class UserUtils {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        return userRepository.findByEmail(authentication.getName()).get();
+        return userRepository.findByEmail(authentication.getName()).orElseThrow();
     }
 
     public boolean isSameUser(Long id) {

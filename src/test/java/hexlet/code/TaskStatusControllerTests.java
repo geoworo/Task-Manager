@@ -32,19 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class TaskStatusControllerTests {
     @Autowired
-    private MockMvc mm;
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private TaskStatusMapper tsm;
+    private TaskStatusMapper taskStatusMapper;
 
     @Autowired
-    private TaskStatusRepository tsr;
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    private UserRepository ur;
+    private UserRepository userRepository;
 
     private TaskStatus ts;
     private User user;
@@ -54,20 +54,20 @@ public class TaskStatusControllerTests {
     public void setUp() {
         ts = Generator.generateStatus();
         user = Generator.generateUser();
-        ur.save(user);
+        userRepository.save(user);
         token = jwt().jwt(builder -> builder.subject(user.getEmail()));
     }
 
     @AfterEach
     public void clean() {
-        tsr.deleteAll();
-        ur.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     public void testIndex() throws Exception {
-        tsr.save(ts);
-        var result = mm.perform(get("/api/task_statuses").with(token))
+        taskStatusRepository.save(ts);
+        var result = mockMvc.perform(get("/api/task_statuses").with(token))
                 .andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
@@ -75,8 +75,8 @@ public class TaskStatusControllerTests {
 
     @Test
     public void testShow() throws Exception {
-        tsr.save(ts);
-        var result = mm.perform(get("/api/task_statuses/" + ts.getId()).with(token))
+        taskStatusRepository.save(ts);
+        var result = mockMvc.perform(get("/api/task_statuses/" + ts.getId()).with(token))
                 .andExpect(status().isOk())
                 .andReturn();
         var body =  result.getResponse().getContentAsString();
@@ -88,38 +88,38 @@ public class TaskStatusControllerTests {
 
     @Test
     public void testCreate() throws Exception {
-        var dto = tsm.map(ts);
+        var dto = taskStatusMapper.map(ts);
         var request = post("/api/task_statuses")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request)
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request)
                 .andExpect(status().isCreated());
-        var tstatus = tsr.findBySlug(dto.getSlug()).get();
+        var tstatus = taskStatusRepository.findBySlug(dto.getSlug()).get();
         assertNotNull(tstatus);
         assertThat(tstatus.getName()).isEqualTo(dto.getName());
     }
 
     @Test
     public void testUpdate() throws Exception {
-        tsr.save(ts);
+        taskStatusRepository.save(ts);
         var dto = new TaskStatusUpdateDTO();
         dto.setName(JsonNullable.of("name"));
         var request = put("/api/task_statuses/" + ts.getId())
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request)
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request)
                 .andExpect(status().isOk());
-        var tstatus = tsr.findById(ts.getId()).get();
+        var tstatus = taskStatusRepository.findById(ts.getId()).get();
         assertThat(tstatus.getName()).isEqualTo(dto.getName().get());
     }
 
     @Test
     public void testDelete() throws Exception {
-        tsr.save(ts);
-        mm.perform(delete("/api/task_statuses/" + ts.getId()).with(token))
+        taskStatusRepository.save(ts);
+        mockMvc.perform(delete("/api/task_statuses/" + ts.getId()).with(token))
                 .andExpect(status().isNoContent());
-        assertThat(tsr.existsById(ts.getId())).isEqualTo(false);
+        assertThat(taskStatusRepository.existsById(ts.getId())).isEqualTo(false);
     }
 }

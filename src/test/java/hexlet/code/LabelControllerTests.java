@@ -32,19 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class LabelControllerTests {
     @Autowired
-    private MockMvc mm;
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private LabelRepository lr;
+    private LabelRepository labelRepository;
 
     @Autowired
-    private UserRepository ur;
+    private UserRepository userRepository;
 
     @Autowired
-    private LabelMapper lm;
+    private LabelMapper labelMapper;
 
     private Label label;
     private JwtRequestPostProcessor token;
@@ -59,22 +59,22 @@ public class LabelControllerTests {
 
     @AfterEach
     public void clean() {
-        lr.deleteAll();
-        ur.deleteAll();
+        labelRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     public void testIndex() throws Exception {
-        lr.save(label);
-        var result = mm.perform(get("/api/labels").with(token)).andExpect(status().isOk()).andReturn();
+        labelRepository.save(label);
+        var result = mockMvc.perform(get("/api/labels").with(token)).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
     }
 
     @Test
     public void testShow() throws Exception {
-        lr.save(label);
-        var request = mm.perform(get("/api/labels/" + label.getId()).with(token))
+        labelRepository.save(label);
+        var request = mockMvc.perform(get("/api/labels/" + label.getId()).with(token))
                 .andExpect(status().isOk()).andReturn();
         var body = request.getResponse().getContentAsString();
         assertThatJson(body).and(
@@ -84,35 +84,35 @@ public class LabelControllerTests {
 
     @Test
     public void testCreate() throws Exception {
-        var dto = lm.map(label);
-        var request = mm.perform(post("/api/labels")
+        var dto = labelMapper.map(label);
+        var request = mockMvc.perform(post("/api/labels")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto)))
+                .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
-        var resultLabel = lr.findByName(label.getName()).get();
+        var resultLabel = labelRepository.findByName(label.getName()).orElseThrow();
         assertNotNull(resultLabel);
         assertThat(resultLabel.getName()).isEqualTo(dto.getName());
     }
 
     @Test
     public void testUpdate() throws Exception {
-        lr.save(label);
+        labelRepository.save(label);
         var dto = new LabelUpdateDTO();
         dto.setName(JsonNullable.of("name"));
         var request = put("/api/labels/" + label.getId())
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request).andExpect(status().isOk());
-        var resultLabel = lr.findById(label.getId()).get();
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request).andExpect(status().isOk());
+        var resultLabel = labelRepository.findById(label.getId()).orElseThrow();
         assertThat(resultLabel.getName()).isEqualTo(dto.getName().get());
     }
 
     @Test
     public void testDelete() throws Exception {
-        lr.save(label);
-        mm.perform(delete("/api/labels/" + label.getId()).with(token)).andExpect(status().isNoContent());
-        assertThat(lr.existsById(label.getId())).isEqualTo(false);
+        labelRepository.save(label);
+        mockMvc.perform(delete("/api/labels/" + label.getId()).with(token)).andExpect(status().isNoContent());
+        assertThat(labelRepository.existsById(label.getId())).isEqualTo(false);
     }
 }

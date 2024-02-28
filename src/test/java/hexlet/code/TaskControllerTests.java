@@ -37,22 +37,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class TaskControllerTests {
     @Autowired
-    private MockMvc mm;
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private TaskMapper tm;
+    private TaskMapper taskMapper;
 
     @Autowired
-    private TaskRepository tr;
+    private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository ur;
+    private UserRepository userRepository;
 
     @Autowired
-    private TaskStatusRepository tsr;
+    private TaskStatusRepository taskStatusRepository;
 
     private TaskStatus tstatus;
     private User user;
@@ -62,11 +62,11 @@ public class TaskControllerTests {
     @BeforeEach
     public void setUp() {
         user = generateUser();
-        ur.save(user);
+        userRepository.save(user);
         token = jwt().jwt(builder -> builder.subject(user.getEmail()));
 
         tstatus = generateStatus();
-        tsr.save(tstatus);
+        taskStatusRepository.save(tstatus);
         task = generateTask();
 
         task.setAssignee(user);
@@ -75,15 +75,15 @@ public class TaskControllerTests {
 
     @AfterEach
     public void clean() {
-        tr.deleteAll();
-        tsr.deleteAll();
-        ur.deleteAll();
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     public void testIndex() throws Exception {
-        tr.save(task);
-        var result = mm.perform(get("/api/tasks").with(token))
+        taskRepository.save(task);
+        var result = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
@@ -91,8 +91,8 @@ public class TaskControllerTests {
 
     @Test
     public void testShow() throws Exception {
-        tr.save(task);
-        var result = mm.perform(get("/api/tasks/" + task.getId()).with(token))
+        taskRepository.save(task);
+        var result = mockMvc.perform(get("/api/tasks/" + task.getId()).with(token))
                 .andExpect(status().isOk())
                 .andReturn();
         var body = result.getResponse().getContentAsString();
@@ -104,13 +104,13 @@ public class TaskControllerTests {
 
     @Test
     public void testCreate() throws Exception {
-        var dto = tm.map(task);
+        var dto = taskMapper.map(task);
         var request = post("/api/tasks")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request).andExpect(status().isCreated());
-        var resultTask = tr.findByName(task.getName()).get();
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request).andExpect(status().isCreated());
+        var resultTask = taskRepository.findByName(task.getName()).orElseThrow();
         assertNotNull(resultTask);
         assertThat(resultTask.getName()).isEqualTo(dto.getTitle());
         assertThat(resultTask.getDescription()).isEqualTo(dto.getContent());
@@ -118,24 +118,24 @@ public class TaskControllerTests {
 
     @Test
     public void testUpdate() throws Exception {
-        tr.save(task);
+        taskRepository.save(task);
         var dto = new TaskUpdateDTO();
         dto.setTitle(JsonNullable.of("name"));
         dto.setContent(JsonNullable.of("description"));
         var request = put("/api/tasks/" + task.getId()).with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(dto));
-        mm.perform(request).andExpect(status().isOk());
-        var resultTask = tr.findById(task.getId()).get();
+                .content(objectMapper.writeValueAsString(dto));
+        mockMvc.perform(request).andExpect(status().isOk());
+        var resultTask = taskRepository.findById(task.getId()).orElseThrow();
         assertThat(resultTask.getName()).isEqualTo(dto.getTitle().get());
         assertThat(resultTask.getDescription()).isEqualTo(dto.getContent().get());
     }
 
     @Test
     public void testDelete() throws Exception {
-        tr.save(task);
-        mm.perform(delete("/api/tasks/" + task.getId()).with(token))
+        taskRepository.save(task);
+        mockMvc.perform(delete("/api/tasks/" + task.getId()).with(token))
                 .andExpect(status().isNoContent());
-        assertThat(tr.existsById(task.getId())).isEqualTo(false);
+        assertThat(taskRepository.existsById(task.getId())).isEqualTo(false);
     }
 }
