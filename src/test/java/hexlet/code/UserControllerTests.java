@@ -38,7 +38,8 @@ public class UserControllerTests {
     @Autowired
     private UserRepository userRepository;
 
-    private Faker faker = new Faker();
+    @Autowired
+    private Faker faker;
 
     private User user;
 
