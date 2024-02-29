@@ -4,12 +4,14 @@ import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.instancio.Select;
 
+@AllArgsConstructor
 public class Generator {
-    private static Faker faker = new Faker();
+    private static Faker faker;
 
     public static User generateUser() {
         return Instancio.of(User.class)
