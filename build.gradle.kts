@@ -75,11 +75,3 @@ sentry {
 	org.set("georgev")
 	projectName.set("java-spring-boot")
 }
-
-tasks.withType<JavaCompile> {
-	options.encoding = "UTF-8"
-}
-
-tasks.withType<Test> {
-	systemProperty("file.encoding", "UTF-8")
-}
