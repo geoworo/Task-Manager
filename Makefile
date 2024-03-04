@@ -27,6 +27,8 @@ lint:
 update-deps:
 	./gradlew useLatestVersions
 
+start:
+	./gradlew bootRun --args='--spring.profiles.active=dev'
 
 build-run: build run
 
